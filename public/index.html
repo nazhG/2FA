@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            background-color: #737373;
+            color: #2f2f2f;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #7f7f7f;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        p {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 10rem;
+            max-width: 80%;
+        }
+
+        hr {
+            width: 100%;
+            margin: 10px 0;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        img {
+            margin: 10px auto;
+            border-radius: 5px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            text-align: start;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ccc;
+        }
+
+        a {
+            color: #2f2f2f;
+        }
+
+        #message {
+            margin: 10px 0;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        #qr-container {
+            display: grid;
+            place-items: center;
+            height: 200px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            /* Light grey */
+            border-top: 4px solid #007bff;
+            /* Azul */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>2FA Demo</h1>
+        <p>Enter the code from your <a
+                href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&pli=1">Authenticator
+                app</a></p>
+        <hr>
+        <div id="qr-container">
+            <div id="qr-loader" class="loader"></div>
+            <img id="qr" style="display: none;" src="" alt="...">
+        </div>
+        <input type="text" onkeydown="if (event.keyCode == 13) document.getElementById('submit').click()" id="code"
+            placeholder="Enter code">
+        <button id="submit" type="button" onclick="verifyCode()">Submit</button>
+        <p id="message"></p>
+    </main>
+    <footer>
+        <a href="https://nazhG.com">
+            author: nazhG
+        </a>
+    </footer>
+    <script>
+        const getQT = async () => {
+            const response = await fetch('/qr-code');
+            // response is data:image/png;base64,....
+            const qrCode = await response.text();
+            const loader = document.getElementById('qr-loader');
+            const img = document.getElementById('qr');
+            img.src = qrCode;
+            loader.style.display = 'none';
+            img.style.display = 'block';
+        };
+
+        getQT();
+
+        const verifyCode = async () => {
+            const token = document.getElementById('code').value;
+            const response = await fetch('/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token })
+            });
+            const data = await response.json();
+            const message = document.getElementById('message');
+            message.innerText = data.message;
+
+            if (data.verified) {
+                message.style.color = '#007bff';
+                message.style.backgroundColor = '#f0f0f0';
+            } else {
+                message.style.color = '#dc3545';
+                message.style.backgroundColor = '#f8d7da';
+            }
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "2fa",
+  "version": "1.0.0",
+  "description": "Simple Google Authenticator interaction with Node.js",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Node",
+    "2FA",
+    "Google Authenticator"
+  ],
+  "type": "module",
+  "author": "nazhG",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "2.8.5",
+    "express": "4.19.2",
+    "qrcode": "1.5.3",
+    "speakeasy": "2.0.0",
+    "sqlite3": "5.1.7"
+  }
+}
